@@ -12,8 +12,8 @@ export type Schedule = {
     id: number,
     name: string,
     servicesToBlock: Service[],
-    startDateISOString: string | null,
+    startDateISOString: string,
     startTimeISOString: string,
-    durationInMinutes: number, /* Must be less than 1440 (24 hours) */
+    durationInMinutes: number,
     repeatType: RepeatType,
 };
