@@ -2,7 +2,7 @@ import {ApolloServer, gql} from 'apollo-server-micro';
 import {MicroRequest} from 'apollo-server-micro/dist/types';
 import {ServerResponse} from 'http';
 import services from '../../data/services';
-import {Schedule, Service} from '../../types/data-types';
+import {RepeatType, Schedule, Service} from '../../types/data-types';
 import * as fs from 'fs';
 
 const typeDefs = gql`
@@ -34,7 +34,7 @@ const resolvers = {
         services() {
             return services;
         },
-        async activeSchedules(parent: object, {dateISOString, timeISOString}: {dateISOString: string, timeISOString: string}): Promise<{schedules: Schedule[], blockedServices: Service[]}> {
+        async activeSchedules(parent: object, {dateISOString, timeISOString}: { dateISOString: string, timeISOString: string }): Promise<{ schedules: Schedule[], blockedServices: Service[] }> {
             /* Parse given date and time */
             const now = assembleDate(dateISOString, timeISOString);
 
@@ -48,7 +48,13 @@ const resolvers = {
                 const startDateTime = assembleDate(schedule.startDateISOString, schedule.startTimeISOString);
                 const endDateTime = new Date(startDateTime.getTime() + schedule.durationInMinutes * 60 * 1000);
 
-                return now >= startDateTime && now <= endDateTime;
+                if (schedule.repeatType === RepeatType.single) {
+                    return now >= startDateTime && now <= endDateTime;
+                } else if (schedule.repeatType === RepeatType.daily) {
+                    return now >= startDateTime
+                        && (timeISOString >= schedule.startTimeISOString
+                            && timeISOString <= endDateTime.toTimeString().substring(0, 8));
+                }
             });
 
             const blockedServices: Service[] = activeSchedules.reduce<Service[]>((result, schedule) => {
@@ -56,7 +62,7 @@ const resolvers = {
             }, []);
 
             return {schedules: activeSchedules, blockedServices};
-        }
+        },
     },
 };
 
