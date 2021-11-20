@@ -6,6 +6,5 @@ export default async function runGraphQlQuery(query: object) {
         },
         body: JSON.stringify({query}),
     });
-    const jsonResponse = await response.json();
-    return jsonResponse.data;
+    return response.json();
 }

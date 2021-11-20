@@ -8,11 +8,11 @@ import * as fs from 'fs';
 const typeDefs = gql`
     type Query {
         services: [Service!]!,
-        getSchedules(dateISOString: String, timeISOString: String): GetSchedulesResponse!,
+        activeSchedules(dateISOString: String, timeISOString: String): SchedulesResponse!,
         addSchedule(name: String!, serviceName: String!, dateISOString: String!, timeISOString: String!, durationInMinutes: Int!, repeatType: String!): Int!
     }
-    type GetSchedulesResponse {
-        activeSchedules: [Schedule!]!,
+    type SchedulesResponse {
+        schedules: [Schedule!]!,
         blockedServices: [Service!]!
     }
     type Service {
@@ -32,11 +32,9 @@ const typeDefs = gql`
 const resolvers = {
     Query: {
         services() {
-            console.log('Services called');
             return services;
         },
-        async getSchedules(parent: object, {dateISOString, timeISOString}: {dateISOString: string, timeISOString: string}): Promise<{activeSchedules: Schedule[], blockedServices: Service[]}> {
-            console.log('GetSchedules called');
+        async activeSchedules(parent: object, {dateISOString, timeISOString}: {dateISOString: string, timeISOString: string}): Promise<{schedules: Schedule[], blockedServices: Service[]}> {
             /* Parse given date and time */
             const now = assembleDate(dateISOString, timeISOString);
 
@@ -57,7 +55,7 @@ const resolvers = {
                 return result.concat(schedule.servicesToBlock);
             }, []);
 
-            return {activeSchedules, blockedServices};
+            return {schedules: activeSchedules, blockedServices};
         }
     },
 };

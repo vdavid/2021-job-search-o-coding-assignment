@@ -3,24 +3,12 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import runGraphQlQuery from '../services/run-graphql-query';
 import ServiceList from '../components/ServiceList';
-import {Schedule, Service} from '../types/data-types';
+import BlockedServicesForDateTime from '../components/BlockedServicesForDateTime';
 
 export default function Home() {
     const {data: serviceResponse, error: serviceResponseError} = useSWR(`{ services { name } }`, runGraphQlQuery);
-    const {data: schedulesResponse, error: schedulesResponseError} = useSWR(`{
-    getSchedules(dateISOString: "${new Date().toDateString()}", timeISOString: "${new Date().toTimeString().substring(0, 8)}") {
-        activeSchedules {
-            name
-        }
-        blockedServices {
-            name
-        }
-    }    
-}`, runGraphQlQuery);
 
-    const services = serviceResponse ? serviceResponse.services : undefined;
-    const activeSchedules: Schedule[] = schedulesResponse ? schedulesResponse.getSchedules.activeSchedules : undefined;
-    const blockedServices: Service[] = schedulesResponse ? schedulesResponse.getSchedules.blockedServices : undefined;
+    const services = serviceResponse ? serviceResponse.data.services : undefined;
 
     return (
         <div className={styles.container}>
@@ -31,28 +19,16 @@ export default function Home() {
             </Head>
 
             <main className={styles.main}>
-                Hello world
+                <h1>Full Stack Engineer Code Test</h1>
+                <h2>by David Veszelovszki</h2>
+                <ServiceList services={services} error={serviceResponseError}/>
 
-                <ServiceList services={services} error={serviceResponseError}/> {!schedulesResponseError
-                ? (activeSchedules !== undefined
-                    ?
-                    <section>
-                        <h1>Blocked services now at {new Date().toDateString()} {new Date().toTimeString().substring(0, 8)}</h1>{blockedServices.length
-                        ? <>
-                            <ul>
-                                {blockedServices.map((service: { name: string }, i: number) => (
-                                    <li key={i}>{service.name}</li>
-                                ))}
-                            </ul>
-                            <p>(Blocked by {'"' + activeSchedules.map(schedule => schedule.name).join('", "') + '"'})</p>
-                        </>
-                        :
-                        <p>No blocked services now.</p>}
-                    </section>
-                    :
-                    <div>Loading...</div>)
-                :
-                <div>Failed to load: {schedulesResponseError}</div>}
+                <h2>Some examples for the current day and other dates:</h2>
+                <p>All of these are loaded dynamically.</p>
+                <BlockedServicesForDateTime dateTime={new Date()}/>
+                <BlockedServicesForDateTime dateTime={new Date('2021-11-20 14:00:00')}/>
+                <BlockedServicesForDateTime dateTime={new Date('2021-11-23 16:30:00')}/>
+                <BlockedServicesForDateTime dateTime={new Date('2021-11-23 17:30:00')}/>
             </main>
         </div>
     );
