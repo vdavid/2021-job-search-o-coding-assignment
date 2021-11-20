@@ -1,15 +1,21 @@
 import useSWR from 'swr';
-import type {NextPage} from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
+import runGraphQlQuery from '../services/run-graphql-query';
+import ServiceList from '../components/ServiceList';
 
-const Home: NextPage = () => {
-    const {data, error} = useSWR('{ users { name } }', fetcher);
+export default function Home() {
+    const {data: serviceResponse, error} = useSWR('{ services { name } }', runGraphQlQuery);
 
-    if (error) return <div>Failed to load</div>;
-    if (!data) return <div>Loading...</div>;
+    if (error) {
+        console.log(error);
+        return <div>Failed to load</div>;
+    }
+    if (!serviceResponse) {
+        return <div>Loading...</div>;
+    }
 
-    const {users} = data;
+    const {services} = serviceResponse;
 
     return (
         <div className={styles.container}>
@@ -22,26 +28,8 @@ const Home: NextPage = () => {
             <main className={styles.main}>
                 Hello world
 
-                <div>
-                    {users.map((user: { name: string }, i: number) => (
-                        <div key={i}>{user.name}</div>
-                    ))}
-                </div>
+                <ServiceList services={services}/>
             </main>
         </div>
     );
-};
-
-
-const fetcher = (query: object) =>
-    fetch('/api/graphql', {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json',
-        },
-        body: JSON.stringify({query}),
-    })
-        .then((res) => res.json())
-        .then((json) => json.data);
-
-export default Home;
+}

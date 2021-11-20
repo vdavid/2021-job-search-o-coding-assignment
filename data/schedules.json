@@ -1,0 +1,56 @@
+[
+    {
+        "id": 0,
+        "name": "lock Twitter on 2021-11-20 between 4pm and 6pm",
+        "servicesToBlock": [{"name": "Twitter"}],
+        "startDateISOString": "2021-11-20",
+        "startTimeISOString": "16:00:00",
+        "durationInMinutes": 120,
+        "repeatType": "single"
+    },
+    {
+        "id": 1,
+        "name": "Block Twitter on 2021-11-20 between 4pm and 6pm",
+        "servicesToBlock": [{"name": "Twitter"}],
+        "startDateISOString": "2021-11-20",
+        "startTimeISOString": "16:00:00",
+        "durationInMinutes": 120,
+        "repeatType": "single"
+    },
+    {
+        "id": 2,
+        "name": "Block Twitter on 2021-11-21 between 4pm and 6pm",
+        "servicesToBlock": [{"name": "Twitter"}],
+        "startDateISOString": "2021-11-21",
+        "startTimeISOString": "16:00:00",
+        "durationInMinutes": 120,
+        "repeatType": "single"
+    },
+    {
+        "id": 3,
+        "name": "Block Twitter on 2021-11-22 between 4pm and 6pm",
+        "servicesToBlock": [{"name": "Twitter"}],
+        "startDateISOString": "2021-11-22",
+        "startTimeISOString": "16:00:00",
+        "durationInMinutes": 120,
+        "repeatType": "single"
+    },
+    {
+        "id": 4,
+        "name": "Block Twitter on 2021-11-23 between 4pm and 6pm",
+        "servicesToBlock": [{"name": "Twitter"}],
+        "startDateISOString": "2021-11-23",
+        "startTimeISOString": "16:00:00",
+        "durationInMinutes": 120,
+        "repeatType": "single"
+    },
+    {
+        "id": 100,
+        "name": "Block Facebook every day between 9am and 5pm",
+        "servicesToBlock": [{"name": "Facebook"}],
+        "startDateISOString": "2021-11-20",
+        "startTimeISOString": "09:00:00",
+        "durationInMinutes": 480,
+        "repeatType": "daily"
+    }
+]
