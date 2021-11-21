@@ -22,7 +22,7 @@ export default function BlockedServicesForDateTime({dateTime}: {dateTime: Date})
         ? (activeSchedules !== undefined
             ?
             <section>
-                <h3>Blocked services at {dateTime.toDateString()} {dateTime.toTimeString().substring(0, 8)}</h3>{blockedServices.length
+                <h4>Blocked services at {dateTime.toDateString()} {dateTime.toTimeString().substring(0, 8)}</h4>{blockedServices.length
                 ? <>
                     <ul>
                         {blockedServices.map((service: { name: string }, i: number) => (

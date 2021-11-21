@@ -23,9 +23,11 @@ export default function Home() {
                 <h2>by David Veszelovszki</h2>
                 <ServiceList services={services} error={serviceResponseError}/>
 
-                <h2>Some examples for the current day and other dates:</h2>
+                <h2>Some examples</h2>
                 <p>All of these are loaded dynamically.</p>
+                <h3>Now</h3>
                 <BlockedServicesForDateTime dateTime={new Date()}/>
+                <h3>Some random dates:</h3>
                 <BlockedServicesForDateTime dateTime={new Date('2021-11-20 14:00:00')}/>
                 <BlockedServicesForDateTime dateTime={new Date('2021-11-23 16:30:00')}/>
                 <BlockedServicesForDateTime dateTime={new Date('2021-11-23 17:30:00')}/>
