@@ -2,8 +2,8 @@ import {ApolloServer, gql} from 'apollo-server-micro';
 import {MicroRequest} from 'apollo-server-micro/dist/types';
 import {ServerResponse} from 'http';
 import services from '../../data/services';
-import {RepeatType, Schedule, Service} from '../../types/data-types';
-import * as fs from 'fs';
+import {Schedule, Service} from '../../types/data-types';
+import {loadSchedules, filterForActiveSchedules} from '../../services/schedule';
 
 const typeDefs = gql`
     type Query {
@@ -34,29 +34,10 @@ const resolvers = {
         services() {
             return services;
         },
+
         async activeSchedules(parent: object, {dateISOString, timeISOString}: { dateISOString: string, timeISOString: string }): Promise<{ schedules: Schedule[], blockedServices: Service[] }> {
-            /* Parse given date and time */
-            const now = assembleDate(dateISOString, timeISOString);
-
-            /* Load schedules */
-            const rawSchedules = await fs.promises.readFile('./data/schedules.json');
-            const schedules: Schedule[] = JSON.parse(rawSchedules.toString());
-
-            /* Filter schedules */
-            const activeSchedules = schedules.filter(schedule => {
-                /* Parse schedule date and time */
-                const startDateTime = assembleDate(schedule.startDateISOString, schedule.startTimeISOString);
-                const endDateTime = new Date(startDateTime.getTime() + schedule.durationInMinutes * 60 * 1000);
-
-                if (schedule.repeatType === RepeatType.single) {
-                    return now >= startDateTime && now <= endDateTime;
-                } else if (schedule.repeatType === RepeatType.daily) {
-                    return now >= startDateTime
-                        && (timeISOString >= schedule.startTimeISOString
-                            && timeISOString <= endDateTime.toTimeString().substring(0, 8));
-                }
-            });
-
+            const schedules = await loadSchedules();
+            const activeSchedules = filterForActiveSchedules(schedules, dateISOString, timeISOString);
             const blockedServices: Service[] = activeSchedules.reduce<Service[]>((result, schedule) => {
                 return result.concat(schedule.servicesToBlock);
             }, []);
@@ -65,12 +46,6 @@ const resolvers = {
         },
     },
 };
-
-function assembleDate(dateISOString: string, timeISOString: string): Date {
-    const date = new Date(dateISOString);
-    const time = new Date(`1970-01-01 ${timeISOString}`);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes(), time.getSeconds());
-}
 
 const apolloServer = new ApolloServer({typeDefs, resolvers});
 
